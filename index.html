@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">  
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.0.16/dist/sweetalert2.all.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+    <title>Document</title>
+    <style>
+        table{
+            text-align: center;
+        }
+        button{
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Realizó: <span class="label label-default">Sanchez Catarino Edgar</span></h1>
+        <div class="well well-lg"><h1>Cifrado Cesar y Viggenere</h1></div>
+        <hr>
+        <br>
+        <table class="table">
+            <thead>
+                <tr>
+                    <td><label>Texto a Cifrar: </label></td>
+                    <td><div class="input-group"><span class="input-group-addon"><i class="glyphicon glyphicon-lock"></i></span><input type="text" id="texto" class="form-control"></div></td>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Modalidad: </td>
+                    <td><input type="radio" id="cesarCode" name="mode" value="0"><label for="cesar">Cesar</label><input type="radio" id="viggenereCode" name="mode" value="1"><label for="viggenere">Viggenere</label></td>
+                </tr>
+            </tbody>
+        </table>
+        <div id="formCipher"></div>
+        <div class="well well-lg"><h2>Decifrado</h2></div>
+        <hr>
+        <table class="table">
+            <thead>
+                <tr>
+                    <td><label>Texto cifrado: </label></td>
+                    <td><div class="input-group"><span class="input-group-addon"><i class="glyphicon glyphicon-lock"></i></span><input type="text" id="txtCifrado" class="form-control"></div></td>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Modalidad: </td>
+                    <td><input type="radio" id="cesarDecode" name="modeDecode" value="0"><label for="cesar">Cesar</label><input type="radio" id="viggenereDecode" name="modeDecode" value="1"><label for="viggenere">Viggenere</label></td>
+                </tr>
+            </tbody>
+        </table>
+        <div id="formDecode"></div>
+    </div>
+    <script>
+        /**
+         * SOBRE viggenere():
+         * Si se manda un parametro a viggenere() este decodificara la entrada.
+         * De lo contrario, cifrara los datos ingresados en div#formCipher.
+         * 
+         * Breve descripcion sobre el algoritmo que use:
+         * Sea el string const abc="ABCDEFGHIJKLMNÑOPQRSTUVWXYZ"; con una longitud "l"
+         * asginese un indice comenzando desde 0 hasta l-1 a cada elemento de abc y 
+         * sea q1 un caracter de la frase que se desea cifrar con indice X y q2 la
+         * letra correspondiente a la clave del cifrado con indice Y:
+         * El indice de la letra cifrada(q1->q2) es X+Y.
+         * Es decir, abc.charAt(X+Y);
+         * Considerese que X+Y debe ser menor estricto que l.
+        */
+        window.onload=()=>{
+            document.getElementsByName("mode").forEach((element)=>{
+                element.onchange=()=>{
+                    const div=document.getElementById("formCipher");
+                    div.innerHTML="";
+                    if(element.id=="cesarCode"){
+                        div.innerHTML=`
+                            <br>
+                            <h3>Opciones de Cifrado: Cesar</h3>
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <td><label>Saltos: </label></td>
+                                        <td><div class="input-group"><span class="input-group-addon"><i class="glyphicon glyphicon-lock"></i></span><input class="form-control" type="number" id="saltos"></div></td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="2"><button onclick="cesar()" class="btn btn-primary">Cifrar</button></td>
+                                    </tr>
+                                </thead>
+                            </table>
+                        `;
+                    }else{
+                        div.innerHTML=`
+                            <br>
+                            <h3>Opciones de Cifrado: Viggenere</h3>
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <td><label>Clave: </label></td>
+                                        <td><div class="input-group"><span class="input-group-addon"><i class="glyphicon glyphicon-lock"></i></span><input class="form-control" type="text" id="clave"></div></td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="2"><button onclick="viggenere()" class="btn btn-primary">Cifrar</button></td>
+                                    </tr>
+                                </thead>
+                            </table>
+                        `;
+                    }
+                }
+            });
+            document.getElementsByName("modeDecode").forEach((element)=>{
+                element.onchange=()=>{
+                    const div=document.getElementById("formDecode");
+                    div.innerHTML="";
+                    if(element.id=="cesarDecode"){
+                        div.innerHTML=`
+                            <br>
+                            <h3>Opciones de Decifrado: Cesar</h3>
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <td><label>Saltos: </label></td>
+                                        <td><div class="input-group"><span class="input-group-addon"><i class="glyphicon glyphicon-lock"></i></span><input class="form-control" type="number" id="saltosDecode"></div></td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="2"><button onclick="cesar(document.getElementById('txtCifrado').value)" class="btn btn-primary">Descifrar</button></td>
+                                    </tr>
+                                </thead>
+                            </table>
+                        `;
+                    }else{
+                        div.innerHTML=`
+                            <br>
+                            <h3>Opciones de Decifrado: Viggenere</h3>
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <td><label>Clave: </label></td>
+                                        <td><div class="input-group"><span class="input-group-addon"><i class="glyphicon glyphicon-lock"></i></span><input class="form-control"type="text" id="claveDecode"></div></td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="2"><button onclick="viggenere(document.getElementById('txtCifrado').value)" class="btn btn-primary">Descifrar</button></td>
+                                    </tr>
+                                </thead>
+                            </table>
+                        `;
+                    }
+                }
+            });
+        }
+        const abc="ABCDEFGHIJKLMNÑOPQRSTUVWXYZ";
+        const viggenere=(txt)=>{
+            if(!txt){
+                let cifrado="";
+                const texto=document.getElementById("texto").value.toUpperCase();
+                const clave=document.getElementById("clave").value.toUpperCase();
+                let claveArray=[];
+                while(texto.length>claveArray.length){
+                    for(i of clave){
+                        if(claveArray.length==texto.length){
+                            break;
+                        }else{
+                            claveArray.push(i); 
+                        }    
+                    }
+                }
+                console.log(claveArray)
+                let j=0;
+                texto.split("").forEach((item)=>{
+                    if(item==" "){
+                        cifrado+=item;
+                    }else{
+                        cifrado+=letraCifrada(item,claveArray[j]);
+                        j++;
+                    }
+                });
+                Swal.fire({  
+                    title:"Frase Codificada",  
+                    text:`${cifrado}`
+                });
+            }else{
+                const clave=document.getElementById("claveDecode").value.toUpperCase();
+                let decifrado="";
+                let claveArray=[];
+                while(txt.length>claveArray.length){
+                    for(i of clave){
+                        if(claveArray.length==txt.length){
+                            break;
+                        }else{
+                            claveArray.push(i); 
+                        }    
+                    }
+                }
+                console.log(claveArray)
+                let j=0;
+                txt.split("").forEach((item)=>{
+                    if(item==" "){
+                        decifrado+=item;
+                    }else{
+                        decifrado+=decifrarLetra(item,claveArray[j]);
+                        j++;
+                    }
+                });
+                Swal.fire({  
+                    title:"Frase Codificada",  
+                    text:`${decifrado}`
+                });
+            }
+        }
+        const letraCifrada=(txt,clave)=>{
+            let suma=abc.indexOf(txt)+abc.indexOf(clave);
+            if(suma>=abc.length){
+                while(suma>=abc.length){
+                    suma-=abc.length;
+                }
+                return abc.charAt(suma);
+            }else{
+                return abc.charAt(suma);
+            }
+        }
+        const decifrarLetra=(txt,clave)=>{
+            let resta=abc.indexOf(txt)-abc.indexOf(clave);
+            if(resta<0){
+                return abc.charAt(resta+abc.length);
+            }else{
+                return abc.charAt(resta);
+            }
+        }
+        /**
+         * SOBRE CESAR():
+         * Si se manda un parametro a cesar() este decodificara la entrada.
+         * De lo contrario, cifrara los datos ingresados en div#formCipher.
+        */
+        const cesar=(txt)=>{
+            let posCaracter;
+            let faltantes;
+            if(!txt){
+                let cadena="";
+                const saltos=parseInt(document.getElementById("saltos").value);
+                const texto=document.getElementById("texto").value.toUpperCase().split("");
+                texto.map((item)=>{
+                    posCaracter=abc.indexOf(item);
+                    if(item==" "){
+                        cadena+=item;
+                    }else{
+                        faltantes=posCaracter+saltos;
+                        if(faltantes>=abc.length){
+                            while(faltantes>=abc.length){
+                                faltantes-=abc.length;
+                            }
+                            cadena+=abc.charAt(faltantes);
+                        }else{
+                            cadena+=abc.charAt(faltantes);
+                        }
+                    }
+                });  
+                Swal.fire({  
+                    title:"Frase Codificada",  
+                    text:`${cadena}`
+                });
+            }else{
+                const saltos=parseInt(document.getElementById("saltosDecode").value);
+                let cadena="";
+                txt.split("").map((item)=>{
+                    posCaracter=abc.indexOf(item);
+                    if(item==" "){
+                        cadena+=item;
+                    }else{
+                        faltantes=posCaracter-saltos;
+                        if(faltantes==0){
+                            cadena+=abc.charAt(faltantes);
+                        }else{
+                            if(faltantes<0){
+                                while(faltantes<0){
+                                    faltantes+=abc.length;
+                                }
+                                cadena+=abc.charAt(faltantes);
+                            }else{
+                                cadena+=abc.charAt(faltantes);
+                            }
+                        }
+                    }
+                });
+                Swal.fire({  
+                    title:"Frase Decodificada",  
+                    text:`${cadena}`
+                });
+            }          
+        }
+    </script>
+</body>
+</html>
